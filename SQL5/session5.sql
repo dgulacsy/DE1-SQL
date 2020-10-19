@@ -1,17 +1,25 @@
 
+USE classicmodels;
+
 -- basic
 DROP PROCEDURE IF EXISTS GetAllProducts;
+
 
 DELIMITER //
 
 CREATE PROCEDURE GetAllProducts()
 BEGIN
 	SELECT *  FROM products;
+    SELECT *  FROM orders;
 END //
 
 DELIMITER ;
 
+
 CALL GetAllProducts();
+
+
+
 
 -- IN
 DROP PROCEDURE IF EXISTS GetOfficeByCountry;
@@ -53,7 +61,10 @@ END$$
 DELIMITER ;
 
 CALL GetOrderCountByStatus('Shipped',@total);
+
+CALL anotherProc(@total);
 SELECT @total;
+
 
 -- Exercise2: Create a stored procedure which returns the amount for Xth entry of payment table. X is IN parameter for the procedure. Display the returned amount.
 
@@ -113,6 +124,25 @@ SELECT @level;
 -- Exercise3:  Create a stored procedure which returns category of a given row. Row number is IN parameter, while category is OUT parameter. Display the returned category. CAT1 - amount > 100.000, CAT2 - amount > 10.000, CAT3 - amount <= 10.000
 
 -- LOOP
+USE classicmodels;
+
+DROP PROCEDURE IF EXISTS LoopDemo;
+
+DELIMITER $$
+CREATE PROCEDURE LoopDemo()
+BEGIN
+      
+	myloop: LOOP 
+		SELECT * FROM offices;
+        LEAVE myloop;
+	END LOOP myloop;
+ END$$
+DELIMITER ;
+CALL LoopDemo();
+
+-- LEAVE myloop;
+
+-- Exercise: Create a loop which counts to 5 and displays the actual count in each step as SELECT (eg. SELECT x) 
 
 DROP PROCEDURE IF EXISTS LoopDemo;
 
@@ -128,8 +158,7 @@ BEGIN
 		SET  x = x + 1;
 		SELECT x;
            
-		IF  (x = 5) THEN
-			LEAVE myloop;
+		IF  (x = 5) THEN LEAVE myloop;
 		END  IF;
          
 	END LOOP myloop;
@@ -138,7 +167,11 @@ DELIMITER ;
 
 CALL LoopDemo();
 
-CREATE TABLE messages (message varchar(100) NOT NULL);
+
+-- debug
+
+
+CREATE TABLE IF NOT EXISTS messages (message varchar(100) NOT NULL);
 
 DROP PROCEDURE IF EXISTS LoopDemo;
 
@@ -163,9 +196,56 @@ BEGIN
 END$$
 DELIMITER ;
 
+CALL LoopDemo();
+
 SELECT * FROM messages;
 
+
+
+
+
 -- CURSOR
+
+DROP PROCEDURE IF EXISTS CursorDemo;
+
+DELIMITER $$
+CREATE PROCEDURE CursorDemo()
+BEGIN
+	
+    DECLARE phone varchar(50) DEFAULT "blabla";
+    DECLARE finished INTEGER DEFAULT 0;
+    DECLARE curPhone CURSOR FOR SELECT customers.phone FROM classicmodels.customers;
+    DECLARE CONTINUE HANDLER  FOR NOT FOUND SET finished = 1;
+	OPEN curPhone;
+    TRUNCATE messages;
+	myloop: LOOP 
+		FETCH curPhone INTO phone;
+        INSERT INTO messages SELECT CONCAT('phone:',phone);
+        
+		IF finished = 1 THEN LEAVE myloop;
+		END IF;
+         
+	END LOOP myloop;
+END$$
+DELIMITER ;
+
+SELECT * FROM messages;
+
+CALL CursorDemo();
+
+-- Exercise: Loop through orders table. Fetch orderNumber + shippedDate. Write in both fields into messages as one line.alter
+
+-- Extra exercise: take a look at the next example with FixUSPhones on Git. Try to solve the Homework. 
+
+CREATE TABLE new_order LIKE orders;
+
+DROP TABLE new_order;
+
+CREATE TABLE new_order AS SELECT * FROM orders;
+
+-- Exercise: Create a stored procedure which creates a table called "product_sales" using the select from HW4.
+
+
 
 DROP PROCEDURE IF EXISTS FixUSPhones; 
 
@@ -189,7 +269,7 @@ BEGIN
 
 	OPEN curPhone;
     
-    	-- create a copy of the customer table 
+	-- create a copy of the customer table 
 	DROP TABLE IF EXISTS classicmodels.fixed_customers;
 	CREATE TABLE classicmodels.fixed_customers LIKE classicmodels.customers;
 	INSERT fixed_customers SELECT * FROM classicmodels.customers;
