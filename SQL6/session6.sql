@@ -1,4 +1,4 @@
-
+USE classicmodels;
 --  ANALYTICAL DATA STORE
 
 DROP PROCEDURE IF EXISTS CreateProductSalesStore;
@@ -48,6 +48,7 @@ SET GLOBAL event_scheduler = ON;
 -- off
 SET GLOBAL event_scheduler = OFF;
 
+TRUNCATE messages;
 
 DELIMITER $$
 
@@ -62,6 +63,8 @@ DO
 	END$$
 DELIMITER ;
 
+SELECT * FROM messages;
+
 SHOW EVENTS;
 
 DROP EVENT IF EXISTS CreateProductSalesStoreEvent;
@@ -71,8 +74,7 @@ DROP EVENT IF EXISTS CreateProductSalesStoreEvent;
 
 -- empty log table
 TRUNCATE messages;
-    
-    
+
 DROP TRIGGER IF EXISTS after_order_insert; 
 
 DELIMITER $$
@@ -119,6 +121,7 @@ DELIMITER ;
 
 SELECT * FROM product_sales ORDER BY SalesId;
 
+
 SELECT COUNT(*) FROM product_sales;
 
 INSERT INTO orders  VALUES(16,'2020-10-01','2020-10-01','2020-10-01','Done','',131);
@@ -130,7 +133,7 @@ SELECT * FROM product_sales WHERE product_sales.SalesId = 16;
 
 
 -- VIEWS AS DATAMARTS
-
+SELECT DISTINCT productlines.productline from productlines;
 
 DROP VIEW IF EXISTS USA;
 
@@ -148,5 +151,12 @@ DROP VIEW IF EXISTS Vintage_Cars;
 CREATE VIEW `Vintage_Cars` AS
 SELECT * FROM product_sales WHERE product_sales.Brand = 'Vintage Cars';
 
+SELECT * FROM Vintage_Cars;
 
+DROP VIEW IF EXISTS Sales_03_05;
 
+CREATE VIEW `Sales_03_05` AS
+SELECT * FROM product_sales WHERE EXTRACT(YEAR FROM product_sales.date) IN (2003,2005);
+SELECT * FROM Sales_03_05;
+
+SELECT count(*) FROM Sales_03_05;
