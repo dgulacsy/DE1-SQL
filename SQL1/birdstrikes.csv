@@ -1,0 +1,10 @@
+id;aircraft;flight_date;damage;airline;state;phase_of_flight;reported_date;bird_size;cost;feet_above_ground
+2;Airplane;2000-01-01;No damage;CONTINENTAL AIRLINES;New Jersey;Take-off run;;Medium;0;0
+3;Airplane;2000-01-01;No damage;UNITED AIRLINES;;;;Medium;0;
+4;Airplane;2000-01-01;No damage;UNITED AIRLINES;Colorado;Climb;;Medium;0;
+5;Airplane;2000-01-01;No damage;UNITED AIRLINES;Illinois;Approach;;Medium;0;
+6;;2000-01-01;No damage;UNKNOWN;New York;;;Medium;0;
+7;Airplane;2000-01-01;Caused damage;US CUSTOMS AND BORDER PROTECTION;Florida;En Route;;Large;0;1000
+8;Airplane;2000-01-01;No damage;AMERICAN AIRLINES;;Take-off run;2000-01-01;Small;0;0
+9;Airplane;2000-01-02;No damage;BUSINESS;Ohio;Landing Roll;;Small;0;0
+10;Airplane;2000-01-02;No damage;BUSINESS;Florida;Approach;;Medium;0;2000
